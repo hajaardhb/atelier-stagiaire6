@@ -3,43 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inscription stagiaire</title>
+  <title>Liste des stagiaires</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 420px; margin: 40px auto; padding: 0 16px; }
-    label { display: block; margin-top: 12px; font-weight: 600; }
-    input { width: 100%; padding: 8px; box-sizing: border-box; }
-    button { margin-top: 16px; padding: 10px 16px; cursor: pointer; }
-    #message { margin-top: 12px; }
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 16px; }
+    #liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .carte { border: 1px solid #ddd; border-radius: 8px; padding: 12px; text-align: center; }
+    .carte img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; background: #eee; }
   </style>
 </head>
 <body>
-  <h1>Inscription</h1>
-  <form id="form">
-    <label>Nom <input type="text" name="nom" required maxlength="100"></label>
-    <label>Prénom <input type="text" name="prenom" required maxlength="100"></label>
-    <label>Ville <input type="text" name="ville" required maxlength="100"></label>
-    <label>Photo <input type="file" name="photo" accept="image/*" required></label>
-    <button type="submit">Inscrire</button>
-  </form>
-  <p id="message"></p>
-  <p><a href="liste.html">Voir la liste des stagiaires</a></p>
+  <h1>Stagiaires inscrits</h1>
+  <p><a href="index.html">← Nouvelle inscription</a></p>
+  <div id="liste">Chargement...</div>
 
   <script>
-    const form = document.getElementById('form');
-    const message = document.getElementById('message');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      message.textContent = 'Envoi en cours...';
+    (async () => {
+      const conteneur = document.getElementById('liste');
       try {
-        const res = await fetch('/api/inscrire.php', { method: 'POST', body: new FormData(form) });
+        const res = await fetch('/api/liste.php');
         const data = await res.json();
-        message.textContent = data.message;
-        if (data.success) form.reset();
+        if (!data.success) throw new Error(data.message);
+
+        conteneur.textContent = '';
+        if (data.stagiaires.length === 0) {
+          conteneur.textContent = 'Aucun stagiaire inscrit.';
+          return;
+        }
+        data.stagiaires.forEach(s => {
+          const carte = document.createElement('div');
+          carte.className = 'carte';
+
+          const img = document.createElement('img');
+          img.src = s.photo;
+          img.alt = `${s.prenom} ${s.nom}`;
+          img.loading = 'lazy';
+
+          const nom = document.createElement('strong');
+          nom.textContent = `${s.prenom} ${s.nom}`;
+
+          const ville = document.createElement('div');
+          ville.textContent = s.ville;
+
+          carte.append(img, nom, ville);
+          conteneur.appendChild(carte);
+        });
       } catch (err) {
-        message.textContent = 'Erreur réseau.';
+        conteneur.textContent = 'Impossible de charger la liste.';
       }
-    });
+    })();
   </script>
 </body>
 </html>
