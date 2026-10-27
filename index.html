@@ -4,40 +4,280 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Inscription stagiaire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 420px; margin: 40px auto; padding: 0 16px; }
-    label { display: block; margin-top: 12px; font-weight: 600; }
-    input { width: 100%; padding: 8px; box-sizing: border-box; }
-    button { margin-top: 16px; padding: 10px 16px; cursor: pointer; }
-    #message { margin-top: 12px; }
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --accent: #06b6d4;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: grid; place-items: center;
+      color: #fff; font-size: 1rem;
+    }
+    .nav-link {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: .9rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background .2s;
+    }
+    .nav-link:hover { background: #eef2ff; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+      text-align: center;
+      padding: 48px 20px 90px;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 700; }
+    .hero p { margin-top: 8px; opacity: .9; }
+
+    /* Carte formulaire */
+    .container {
+      max-width: 480px;
+      margin: -60px auto 40px;
+      padding: 0 16px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .12);
+    }
+
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .field input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      font: inherit;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #f8fafc;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .field input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, .15);
+    }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 480px) { .row { grid-template-columns: 1fr; } }
+
+    /* Zone photo */
+    .upload {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .upload:hover { border-color: var(--primary); background: #eef2ff; }
+    .preview {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: #e2e8f0 center/cover no-repeat;
+      display: grid; place-items: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .upload-text strong { display: block; font-size: .9rem; }
+    .upload-text span { font-size: .8rem; color: var(--muted); }
+    .upload input { display: none; }
+
+    /* Bouton */
+    button {
+      width: 100%;
+      margin-top: 6px;
+      padding: 14px;
+      font: inherit;
+      font-weight: 600;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 6px 16px rgba(79, 70, 229, .35);
+      transition: transform .15s, box-shadow .15s, opacity .2s;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(79, 70, 229, .45); }
+    button:active { transform: translateY(0); }
+    button:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* Message */
+    #message {
+      margin-top: 16px;
+      padding: 0;
+      border-radius: 10px;
+      font-size: .9rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    #message.info, #message.success, #message.error { padding: 12px 14px; }
+    #message.info { background: #e0e7ff; color: var(--primary-dark); }
+    #message.success { background: var(--success-bg); color: var(--success); }
+    #message.error { background: var(--error-bg); color: var(--error); }
+
+    .footer-link { text-align: center; margin-top: 20px; }
+    .footer-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .footer-link a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <h1>Inscription</h1>
-  <form id="form">
-    <label>Nom <input type="text" name="nom" required maxlength="100"></label>
-    <label>Prénom <input type="text" name="prenom" required maxlength="100"></label>
-    <label>Ville <input type="text" name="ville" required maxlength="100"></label>
-    <label>Photo <input type="file" name="photo" accept="image/*" required></label>
-    <button type="submit">Inscrire</button>
-  </form>
-  <p id="message"></p>
-  <p><a href="liste.html">Voir la liste des stagiaires</a></p>
+
+  <nav class="navbar">
+    <div class="brand"><span class="brand-logo">🎓</span> Gestion des stagiaires</div>
+    <a class="nav-link" href="liste.html">Voir la liste →</a>
+  </nav>
+
+  <header class="hero">
+    <h1>Inscription</h1>
+    <p>Remplissez le formulaire pour inscrire un nouveau stagiaire</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <form id="form">
+        <div class="row">
+          <div class="field">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" name="nom" required maxlength="100" placeholder="Ex : Alaoui">
+          </div>
+          <div class="field">
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" name="prenom" required maxlength="100" placeholder="Ex : Sara">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="ville">Ville</label>
+          <input type="text" id="ville" name="ville" required maxlength="100" placeholder="Ex : Tanger">
+        </div>
+
+        <div class="field">
+          <label>Photo</label>
+          <label class="upload" for="photo">
+            <div class="preview" id="preview">📷</div>
+            <div class="upload-text">
+              <strong id="fileName">Choisir une photo</strong>
+              <span>PNG, JPG ou WEBP</span>
+            </div>
+            <input type="file" id="photo" name="photo" accept="image/*" required>
+          </label>
+        </div>
+
+        <button type="submit" id="btn">Inscrire</button>
+      </form>
+      <p id="message"></p>
+    </div>
+
+    <p class="footer-link"><a href="liste.html">Voir la liste des stagiaires</a></p>
+  </main>
 
   <script>
     const form = document.getElementById('form');
     const message = document.getElementById('message');
+    const btn = document.getElementById('btn');
+    const photo = document.getElementById('photo');
+    const preview = document.getElementById('preview');
+    const fileName = document.getElementById('fileName');
+
+    function setMessage(text, type) {
+      message.textContent = text;
+      message.className = type || '';
+    }
+
+    function resetPreview() {
+      preview.style.backgroundImage = '';
+      preview.textContent = '📷';
+      fileName.textContent = 'Choisir une photo';
+    }
+
+    // Aperçu de la photo choisie
+    photo.addEventListener('change', () => {
+      const file = photo.files[0];
+      if (!file) { resetPreview(); return; }
+      fileName.textContent = file.name;
+      preview.textContent = '';
+      preview.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      message.textContent = 'Envoi en cours...';
+      setMessage('Envoi en cours...', 'info');
+      btn.disabled = true;
       try {
         const res = await fetch('/api/inscrire.php', { method: 'POST', body: new FormData(form) });
         const data = await res.json();
-        message.textContent = data.message;
-        if (data.success) form.reset();
+        setMessage(data.message, data.success ? 'success' : 'error');
+        if (data.success) { form.reset(); resetPreview(); }
       } catch (err) {
-        message.textContent = 'Erreur réseau.';
+        setMessage('Erreur réseau.', 'error');
+      } finally {
+        btn.disabled = false;
       }
     });
   </script>
